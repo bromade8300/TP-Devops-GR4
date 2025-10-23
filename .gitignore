@@ -1,0 +1,49 @@
+# Common files to ignore for Python projects
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+.env
+.venv
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+*.pot
+*.pyc
+*.sqlite3
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal
+
+# Ignore virtual environments
+venv/
+ENV/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore Node.js dependencies
+node_modules/
+
+# Ignore build output for React projects
+build/
+.DS_Store
+
+# Ignore environment-specific files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore Yarn and npm logs
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
