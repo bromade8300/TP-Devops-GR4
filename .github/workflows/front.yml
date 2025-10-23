@@ -1,0 +1,34 @@
+name: Frontend Application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  front:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: ./front
+        run: npm install
+
+      - name: Run build (optional sanity check)
+        working-directory: ./front
+        run: npm run build --if-present
+
+      - name: Build Docker image 🐳
+        run: |
+          docker build -t my-front:latest ./front
+
+      - name: 🧹 Clean up
+        run: docker image prune -f

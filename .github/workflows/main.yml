@@ -6,6 +6,8 @@ on:
 
 jobs:
   database:
-    uses: ./.github/workflows/docker-mysql.yml
+    uses: ./.github/workflows/jobs/database.yml
     with:
       db_name: image_detection
+  front:
+    uses: ./.github/workflows/jobs/front.yml
