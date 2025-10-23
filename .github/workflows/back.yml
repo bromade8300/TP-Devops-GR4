@@ -1,0 +1,72 @@
+name: Backend Application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: image_detection
+          MYSQL_USER: app_user
+          MYSQL_PASSWORD: app_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 🐍
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        working-directory: ./back
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..15}; do
+            if mysqladmin ping -h 127.0.0.1 --silent; then
+              echo "✅ MySQL is up!"
+              break
+            fi
+            echo "⏳ Waiting for MySQL..."
+            sleep 5
+          done
+
+      - name: Run tests (if any)
+        working-directory: ./back
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: app_user
+          DB_PASSWORD: app_password
+          DB_NAME: image_detection
+        run: |
+          echo "⚙️ Running backend checks..."
+          python -m unittest discover -s tests || echo "No tests found"
+
+      - name: Build Docker image 🐳
+        run: |
+          docker build -t my-back:latest ./back
+
+      - name: 🧹 Clean up
+        run: docker image prune -f

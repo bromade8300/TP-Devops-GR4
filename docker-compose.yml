@@ -28,3 +28,21 @@ services:
     volumes:
       - ./front:/app
     command: ["npm", "run", "start"]
+
+  backend:
+    build:
+      context: ./back
+    container_name: image_detection_back
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=root_password
+      - DB_NAME=image_detection
+    volumes:
+      - ./back:/app
