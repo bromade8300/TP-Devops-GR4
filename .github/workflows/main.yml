@@ -1,0 +1,11 @@
+name: Main Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  database:
+    uses: ./.github/workflows/docker-mysql.yml
+    with:
+      db_name: image_detection
