@@ -9,5 +9,11 @@ jobs:
     uses: ./.github/workflows/jobs/database.yml
     with:
       db_name: image_detection
+
+  back:
+    needs: database
+    uses: ./.github/workflows/jobs/back.yml
+
   front:
+    needs: back
     uses: ./.github/workflows/jobs/front.yml
