@@ -1,0 +1,37 @@
+name: MySQL Container
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  mysql-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: docker compose up -d
+
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL to start.."
+          for i in {1..30}; do
+            if docker exec image_detection_db mysqladmin ping -h"127.0.0.1" -uroot -proot_password --silent; then
+              echo "MySQL is ready"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Run MySQL commands
+        run: |
+          docker exec image_detection_db \
+            mysql -uroot -proot_password -e "
+              SHOW DATABASES;
+              USE image_detection;
+              SHOW TABLES;
+            "
