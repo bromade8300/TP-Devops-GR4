@@ -6,17 +6,17 @@ on:
 
 jobs:
   database:
-    uses: ./.github/workflows/jobs/database.yml
+    uses: ./.github/workflows/database.yml
     with:
       db_name: image_detection
 
   back:
     needs: database
-    uses: ./.github/workflows/jobs/back.yml
+    uses: ./.github/workflows/back.yml
 
   front:
     needs: back
-    uses: ./.github/workflows/jobs/front.yml
+    uses: ./.github/workflows/front.yml
 
   deploy-to-coolify:
     needs: [front, back, database]
