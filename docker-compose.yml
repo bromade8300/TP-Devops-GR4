@@ -1,8 +1,10 @@
+version: "3.9"
+
 services:
   mysql:
-    image: mysql:8.0
+    build:
+      context: ./db
     container_name: image_detection_db
-    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: image_detection
@@ -11,8 +13,24 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./data/mysql:/var/lib/mysql
-      - ./init:/docker-entrypoint-initdb.d
+      - ./mysqldata:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+
+  backend:
+    build:
+      context: ./back
+    container_name: image_detection_back
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: app_user 
+      DB_PASSWORD: app_password
+      DB_NAME: image_detection
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   frontend:
     build:
@@ -22,27 +40,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      NODE_ENV: production
+      REACT_APP_API_URL: http://localhost:8000
     depends_on:
-      - mysql
+      backend:
+        condition: service_started
     volumes:
       - ./front:/app
+    working_dir: /app
     command: ["npm", "run", "start"]
-
-  backend:
-    build:
-      context: ./back
-    container_name: image_detection_back
-    restart: always
-    ports:
-      - "8000:8000"
-    depends_on:
-      - mysql
-    environment:
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=root_password
-      - DB_NAME=image_detection
-    volumes:
-      - ./back:/app
