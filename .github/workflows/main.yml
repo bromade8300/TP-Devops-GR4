@@ -17,3 +17,7 @@ jobs:
   front:
     needs: back
     uses: ./.github/workflows/jobs/front.yml
+
+  deploy-to-coolify:
+    needs: [front, back, database]
+    uses: ./.github/workflows/deploy-to-coolify.yml
