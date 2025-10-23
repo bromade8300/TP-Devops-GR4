@@ -10,14 +10,15 @@ jobs:
     with:
       db_name: image_detection
 
-  back:
-    needs: database
-    uses: ./.github/workflows/jobs/back.yml
-
   front:
-    needs: back
+    needs: database
     uses: ./.github/workflows/jobs/front.yml
 
+  back:
+    needs: front
+    uses: ./.github/workflows/jobs/back.yml
+
   deploy-to-coolify:
-    needs: [front, back, database]
+    needs: back
+    if: ${{ needs.back.result == 'success' }}
     uses: ./.github/workflows/deploy-to-coolify.yml
